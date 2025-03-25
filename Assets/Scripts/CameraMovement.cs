@@ -23,8 +23,8 @@ public class CameraMovement : MonoBehaviour
         float stepZ = Input.GetAxis("Vertical");
         // Direct up and down movement uses Q and E
         float stepY = 0f;
-        if (Input.GetKey(KeyCode.Q)) stepY = 1f;
-        if (Input.GetKey(KeyCode.E)) stepY = -1f;
+        if (Input.GetKey(KeyCode.E)) stepY = 1f;
+        if (Input.GetKey(KeyCode.Q)) stepY = -1f;
 
         Vector3 stepDirection = transform.right * stepX + transform.up * stepY + transform.forward * stepZ;
         transform.position += stepDirection * speed * Time.deltaTime;

@@ -2,53 +2,73 @@ Shader "Custom/Outline"
 {
     Properties
     {
-        _OutlineColor ("Outline Color", Color) = (0, 0, 1, 1)
-        _OutlineWidth ("Outline Width", Float) = 1.0
-        _MainTex ("Base (RGB)", 2D) = "white" { }
+        _OutlineColor ("Outline Color", Color) = (0, 0, 1, 1) // Blue outline
+        _OutlineWidth ("Outline Width", Float) = 0.03 // Thickness of outline
+        _MainTex ("Main Texture", 2D) = "white" {}
     }
+
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
-        
-        Pass {
-            Name "OUTLINE"
-            Tags { "LightMode" = "Always" }
+        Tags { "RenderType" = "Opaque" }
 
+        // Outline Pass
+        Pass
+        {
+            Name "OUTLINE"
+            Cull Front // Render outline behind the object
             ZWrite On
             ZTest LEqual
-            Cull Front
-            ColorMask RGB
 
-            // Outline color
-            Color [_OutlineColor]
-            
-            // Inflate the geometry
-            Offset 20, 20
+            Stencil {
+                Ref 1
+                Comp always
+                Pass replace
+            }
 
-            // Set the shader to ignore texture, we don't need it for the outline
-            SetTexture[_MainTex] { combine primary }
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #include "UnityCG.cginc"
+
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float3 normal : NORMAL;
+            };
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+            };
+
+            float _OutlineWidth;
+            void vert(appdata v, out v2f o)
+            {
+                o.pos = UnityObjectToClipPos(v.vertex + v.normal * _OutlineWidth);
+            }
+
+            half4 _OutlineColor;
+            half4 frag(v2f i) : SV_Target
+            {
+                return _OutlineColor;
+            }
+            ENDCG
         }
-    }
-    SubShader {
-        Tags { "RenderType"="Opaque" }
 
-        Pass {
-            Name "OUTLINE"
-            Tags { "LightMode" = "Always" }
-
+        // Main Object Pass (Keeps original material)
+        Pass
+        {
+            Name "MAIN"
+            Cull Back
             ZWrite On
             ZTest LEqual
-            Cull Front
-            ColorMask RGB
 
-            // Outline color
-            Color [_OutlineColor]
-            
-            // Inflate the geometry
-            Offset 20, 20
+            Stencil {
+                Ref 1
+                Comp notequal
+            }
 
-            // Set the shader to ignore texture, we don't need it for the outline
-            SetTexture[_MainTex] { combine primary }
+            SetTexture[_MainTex] { combine texture }
         }
     }
     FallBack "Diffuse"
