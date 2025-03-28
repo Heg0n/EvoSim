@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Evo NEA.sln"
+    "dotnet.defaultSolution": "EvoSim.sln"
 }
