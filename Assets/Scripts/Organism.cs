@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 
 public class Organism : MonoBehaviour
 {
+    public GameObject menu;   
     public float speed;
     public float perception;
 

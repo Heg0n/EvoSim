@@ -49,7 +49,7 @@ public class OrganismManager : MonoBehaviour
 
         // Adjusts the size and position of the canvas
         RectTransform canvasRect = canvasObject.GetComponent<RectTransform>();
-        canvasRect.sizeDelta = new Vector2(200, 100); // Sets the size of the canvas
+        canvasRect.sizeDelta = new Vector2(2, 1); // Sets the size of the canvas
         canvasRect.localPosition = new Vector3(0, 2.5f, 0); // Positions the canvas above the organism
         canvasRect.localRotation = Quaternion.Euler(90, 0, 0); // Rotates the canvas to face the camera
 
@@ -63,7 +63,7 @@ public class OrganismManager : MonoBehaviour
 
         // Adjusts the size and position of the panel
         RectTransform panelRect = panelObject.GetComponent<RectTransform>();
-        panelRect.sizeDelta = new Vector2(200, 100); // Matches the size of the canvas
+        panelRect.sizeDelta = new Vector2(2, 1); // Matches the size of the canvas
         panelRect.localPosition = Vector3.zero; // Centers the panel within the canvas
 
         AddTextElement(panelObject, "NameText", organismComponent.name, new Vector2(0, 40));
@@ -71,6 +71,12 @@ public class OrganismManager : MonoBehaviour
         AddTextElement(panelObject, "PerceptionText", "Perception: " + organismComponent.perception.ToString("F2"), new Vector2(0, 0));
         AddTextElement(panelObject, "MaxEnergyText", "Max Energy: " + organismComponent.maxEnergy.ToString("F2"), new Vector2(0, -20));
         AddTextElement(panelObject, "EnergyText", "Energy: " + organismComponent.energy.ToString("F2"), new Vector2(0, -40));
+
+        // Stores the menu reference in the Organism component
+        organismComponent.menu = canvasObject;
+
+        // Hides the menu on default
+        canvasObject.SetActive(false);
 
     }
 

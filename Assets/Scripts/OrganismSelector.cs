@@ -8,9 +8,32 @@ public class OrganismSelector : MonoBehaviour
     private GameObject currentTarget = null;
     private Material originalMaterial;
 
+    private bool isTracking = false;
+
+    // UI elements for displaying stats
+    public GameObject menuPanel;
+    public Text nameText;
+    public Text speedText;
+    public Text perceptionText;
+    public Text maxEnergyText;
+    public Text energyText;
+
     void Update()
     {
-        UpdateHighlighting();
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            ToggleTracking();
+        }
+        
+        // If tracking, no need to update highlighting
+        if (!isTracking)
+        {
+            UpdateHighlighting();
+        }
+        else if (currentTarget != null)
+        {
+            FollowTarget();
+        }
     }
 
     void UpdateHighlighting()
@@ -46,6 +69,14 @@ public class OrganismSelector : MonoBehaviour
                 Debug.Log("Renderer is not null");
                 renderer.material = originalMaterial; // Restore original material
             }
+
+            // Hides the menu of the previously highlighted organism
+            Organism organism = currentTarget.GetComponent<Organism>();
+            if (organism != null && organism.menu != null)
+            {
+                organism.menu.SetActive(false);
+            }
+
             currentTarget = null; // Cleared stored target
         }
     }
@@ -60,6 +91,51 @@ public class OrganismSelector : MonoBehaviour
             // Store the original material temporarily to replace after highlight is removed
             originalMaterial = renderer.material;
             renderer.material = outlineMaterial;
+
+            // Show the menu of the newly highlighted organism
+            Organism organism = target.GetComponent<Organism>();
+            if (organism != null && organism.menu != null)
+            {
+                organism.menu.SetActive(true);
+            }
         }
+    }
+
+    void ToggleTracking() {
+        if (isTracking)
+        {
+            isTracking = false;
+            Cursor.lockState = CursorLockMode.None; // Unlocks the cursor
+            Cursor.visible = true; // Makes the cursor visible
+
+            if (currentTarget != null)
+            {
+                // Hides the menu of the currently tracked organism
+                Organism organism = currentTarget.GetComponent<Organism>();
+                if (organism != null && organism.menu != null)
+                {
+                    organism.menu.SetActive(false);
+                }
+            }
+        }
+        else if (currentTarget != null)
+        {
+            isTracking = true;
+            Cursor.lockState = CursorLockMode.Locked; // Locks the cursor to the center of the screen
+            Cursor.visible = false; // Hides the cursor
+
+            // Shows the menu of the currently tracked organism
+            Organism organism = currentTarget.GetComponent<Organism>();
+            if (organism != null && organism.menu != null)
+            {
+                organism.menu.SetActive(true);
+            }
+        }
+    }
+
+    void FollowTarget()
+    {
+        // Makes main camera lock on the current target
+        mainCamera.transform.LookAt(currentTarget.transform.position);
     }
 }
